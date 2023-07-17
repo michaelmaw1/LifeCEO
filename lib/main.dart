@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome'),
+        title: const Text('LifeCEO'),
       ), //AppBar
       body: Center(
         child: Column(
@@ -284,7 +284,7 @@ class ManageTasks extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 35,
                   ),
-                  'Lorum Ipsum'),
+                  ''),
               Positioned(
                 bottom: 5,
                 child: ElevatedButton(
