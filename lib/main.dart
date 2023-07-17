@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart' ;
+import 'package:project/secrets.dart';
+import 'package:dart_openai/dart_openai.dart';
 
 void main(){
   runApp(const MyApp());
+  OpenAI.apiKey = openAiApiKey;
 }
 
 class MyApp extends StatelessWidget {
@@ -16,26 +19,17 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
+        '/': (context) => const HomePage(),
         '/Sign In': (context) => const SignIn(),
-        '/Shop': (context) => const Shop(),
-        '/Get Information': (context) => const MoreInfo(),
+        '/Shop': (context) => CreateTask(),
+        '/Get Information': (context) => const ManageTasks(),
       },
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  final myController = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-//    super.dispose();
-  }
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +104,7 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder:(context) => const Shop()),
+                    MaterialPageRoute(builder:(context) => CreateTask()),
                   );
                 },
                 child: const Text(
@@ -126,7 +120,7 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder:(context) => const MoreInfo()),
+                    MaterialPageRoute(builder:(context) => const ManageTasks()),
                   );
                 },
                 child: const Text(
@@ -186,8 +180,28 @@ class SignIn extends StatelessWidget {
   }
 }
 
-class Shop extends StatelessWidget {
-  const Shop({super.key});
+class CreateTask extends StatelessWidget {
+  CreateTask({super.key});
+
+  final myController = TextEditingController();
+  String s = '';
+  Future<void> chat_message(String m) async{
+    OpenAIChatCompletionModel chatCompletion = await OpenAI.instance.chat.create(
+      model: "gpt-3.5-turbo",
+      messages: [
+        OpenAIChatCompletionChoiceMessageModel(
+          content: m,
+          role: OpenAIChatMessageRole.user,
+        ),
+      ],
+    );
+  }
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+//    super.dispose();
+  }
 
   @override
   Widget build (BuildContext context) {
@@ -199,42 +213,49 @@ class Shop extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              
               const Text('Title'),
-              const TextField(
+              TextField(
+                controller: myController,
+                // ignore: prefer_const_constructors
                 decoration: InputDecoration(
                   labelText: 'Enter a Title',
                 ),
               ),
               const Text('Description'),
-              const TextField(
+              TextField(
+                controller: myController,
                 decoration: InputDecoration(
                   labelText: 'Enter a Description',
                 ),
               ),
               const Text('Start Time'),
-              const TextField(
+              TextField(
+                controller: myController,
                 decoration: InputDecoration(
                   labelText: 'Enter a starting time for the task',
                 ),
               ),
               const Text('End Time'),
-              const TextField(
+              TextField(
+                controller: myController,
                 decoration: InputDecoration(
                   labelText: 'Enter an ending time for the task',
                 ),
               ),
               const Text('Location'),
-              const TextField(
+              TextField(
+                controller: myController,
                 decoration: InputDecoration(
                   labelText: 'Enter a location for the task',
                 ),
               ),
-//              ElevatedButton(
-//                onPressed: () {},
-//                child: const Text ('Create your Task!'),
-//              ),
+
+
               ElevatedButton(
                 onPressed: () {
+                  s += myController.text;
+                  chat_message(s);
                   Navigator.pop(context);
                 },
                 child: const Text ('Create your Task!'),
@@ -246,14 +267,14 @@ class Shop extends StatelessWidget {
   }
 }
 
-class MoreInfo extends StatelessWidget {
-  const MoreInfo({super.key});
+class ManageTasks extends StatelessWidget {
+  const ManageTasks({super.key});
 
   @override
   Widget build (BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Location'),
+        title: const Text('Manage Your Tasks!'),
       ),
       body: Center(
           child: Column(
